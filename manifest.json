@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Weather Extension",
+  "version": "1.0",
+  "description": "A Chrome extension that displays the current temperature based on your location.",
+  "icons": {
+    "16": "icons/icon16_clear-day.png",
+    "48": "icons/icon48_clear-day.png",
+    "128": "icons/icon128_clear-day.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16_clear-day.png",
+      "48": "icons/icon48_clear-day.png",
+      "128": "icons/icon128_clear-day.png"
+    },
+    "default_title": "Weather Extension"
+  },
+  "permissions": ["storage", "alarms"],
+  "host_permissions": ["https://api.weatherapi.com/*"],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  }
+}

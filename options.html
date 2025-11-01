@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Extension Options</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label { display: block; margin-bottom: 5px; }
+    input[type="text"] { width: 300px; padding: 8px; margin-bottom: 10px; }
+    button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    #status { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Weather Extension Options</h1>
+  <div>
+    <label for="apiKey">WeatherAPI.com API Key:</label>
+    <input type="text" id="apiKey" placeholder="Enter your API key here">
+  </div>
+  <div>
+    <label for="city">City:</label>
+    <input type="text" id="city" placeholder="Enter city name (e.g., London)">
+  </div>
+  <button id="saveButton">Save</button>
+  <div id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>
