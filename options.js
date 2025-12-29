@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const apiKeyInput = document.getElementById('apiKey');
-  const cityInput = document.getElementById('city');
-  const saveButton = document.getElementById('saveButton');
-  const statusDiv = document.getElementById('status');
+  const apiKeyInput = document.querySelector('#apiKey');
+  const cityInput = document.querySelector('#city');
+  const saveButton = document.querySelector('#saveButton');
+  const statusDiv = document.querySelector('#status');
 
   // Load saved settings
   chrome.storage.sync.get(['weatherApiKey', 'city'], (data) => {

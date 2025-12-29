@@ -6,8 +6,8 @@ function updateBadge(feeText) {
     if (feeText === 'Error') {
       temperatureText = 'Err';
     } else {
-      const numTemp = parseFloat(feeText);
-      temperatureText = numTemp.toFixed(0) + '°'; // Display temperature with degree symbol
+      const numberTemporary = Number.parseFloat(feeText);
+      temperatureText = numberTemporary.toFixed(0) + '°'; // Display temperature with degree symbol
     }
 
     chrome.action.setBadgeText({ text: temperatureText });
@@ -103,7 +103,7 @@ function getWeather(apiKey, city) {
     .catch(error => {
       console.error('Fetch weather error:', error);
       updateBadge('Error');
-      updateIcon(null, null); // Set a default error icon
+      updateIcon(); // Set a default error icon
     });
 }
 
@@ -159,7 +159,9 @@ const weatherIconMap = {
 
 function updateIcon(conditionCode, isDay) {
   let iconName = 'clear-day'; // Default icon
+  // eslint-disable-next-line security/detect-object-injection
   if (conditionCode && weatherIconMap[conditionCode]) {
+    // eslint-disable-next-line security/detect-object-injection
     iconName = isDay ? weatherIconMap[conditionCode].day : weatherIconMap[conditionCode].night;
   } else if (isDay === 0) { // If night and no specific icon, use clear-night
     iconName = 'clear-night';
