@@ -63,48 +63,58 @@ function fetchWeatherData(forceUpdate = false) {
   });
 }
 
-function getWeather(apiKey, city) {
-  const url = `${WEATHER_API_URL}?key=${apiKey}&q=${city}`;
-  fetch(url)
-    .then(response => {
-      console.log('Weather API response status:', response.status);
+async function fetchWithRetry(url, options = {}, maxRetries = 6, baseDelay = 1000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      console.log('Weather API response data:', data);
-      const newTemperature = data.current.temp_c;
-      const weatherConditionCode = data.current.condition.code; // Assuming WeatherAPI provides a code
-      const isDay = data.current.is_day; // 1 for day, 0 for night
+      return response;
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, attempt - 1)));
+    }
+  }
+}
 
-      console.log('New temperature:', newTemperature);
-      console.log('Weather condition code:', weatherConditionCode);
-      console.log('Is day:', isDay);
+async function getWeather(apiKey, city) {
+  const url = `${WEATHER_API_URL}?key=${apiKey}&q=${city}`;
+  try {
+    const response = await fetchWithRetry(url);
+    console.log('Weather API response status:', response.status);
+    const data = await response.json();
 
-      const feelsLike = data.current.feelslike_c;
-      const conditionText = data.current.condition.text;
-      const cloudCoverage = data.current.cloud;
-      const uvIndex = data.current.uv;
+    console.log('Weather API response data:', data);
+    const newTemperature = data.current.temp_c;
+    const weatherConditionCode = data.current.condition.code;
+    const isDay = data.current.is_day;
 
-      chrome.storage.local.set({
-        temperature: newTemperature,
-        lastUpdate: Date.now(),
-        feelsLike: feelsLike,
-        conditionText: conditionText,
-        cloudCoverage: cloudCoverage,
-        uvIndex: uvIndex
-      }, () => {
-        console.log('Weather data saved to storage');
-      });
-      updateBadge(newTemperature);
-      updateIcon(weatherConditionCode, isDay);
-      updateActionTitle(newTemperature, feelsLike, conditionText, cloudCoverage, uvIndex);
-    })
-    .catch(error => {
-      console.error('Fetch weather error:', error);
-      updateBadge('Error');
-      updateIcon(); // Set a default error icon
+    console.log('New temperature:', newTemperature);
+    console.log('Weather condition code:', weatherConditionCode);
+    console.log('Is day:', isDay);
+
+    const feelsLike = data.current.feelslike_c;
+    const conditionText = data.current.condition.text;
+    const cloudCoverage = data.current.cloud;
+    const uvIndex = data.current.uv;
+
+    chrome.storage.local.set({
+      temperature: newTemperature,
+      lastUpdate: Date.now(),
+      feelsLike: feelsLike,
+      conditionText: conditionText,
+      cloudCoverage: cloudCoverage,
+      uvIndex: uvIndex
+    }, () => {
+      console.log('Weather data saved to storage');
     });
+    updateBadge(newTemperature);
+    updateIcon(weatherConditionCode, isDay);
+    updateActionTitle(newTemperature, feelsLike, conditionText, cloudCoverage, uvIndex);
+  } catch (error) {
+    console.error('Fetch weather error:', error);
+    updateBadge('Error');
+    updateIcon();
+  }
 }
 
 const weatherIconMap = {
