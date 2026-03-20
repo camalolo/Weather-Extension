@@ -198,6 +198,18 @@ chrome.action.onClicked.addListener(() => {
   fetchWeatherData(true);
 });
 
+chrome.idle.onStateChanged.addListener((state) => {
+  if (state === 'active') {
+    console.log('System woke from idle, refreshing weather data');
+    fetchWeatherData();
+  }
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  console.log('Browser started, initializing weather data fetch');
+  fetchWeatherData();
+});
+
 console.log('Extension loaded, initiating first fetch');
 fetchWeatherData();
 
